@@ -1,4 +1,23 @@
 sql
-CREATE TABLE CUSTOMERS(
+CREATE TABLE CUSTOMERS (
+  customer_id INT PRIMARY KEY,
+  name VARCHAR2(100) NOT NULL,
+  region VARCHAR2(50) NOT NULL
+);
+CREATE TABLE PRODUCTS (
+  product_id INT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  category VARCHAR2(50) NOT NULL
+);
+CREATE TABLE TRANSACTIONS (
+  transaction_id INT PRIMARY KEY,
+  customer_id INT, 
+  product_id INT,
+  sale_date DATE NOT NULL,
+  amount NUMBER(10,2) NOT NULL,
+  CONSTRAINT fk_CUSTOMER FOREIGN KEY (customer_id) REFERENCES CUSTOMERS (customer_id),
+  CONSTRAINT fk_PRODUCT FOREIGN KEY (product_id) REFERENCES PRODUCTS (product_id)
+;
+  
   
   

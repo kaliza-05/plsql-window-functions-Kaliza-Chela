@@ -1,1 +1,4 @@
-
+sql
+CREATE TABLE CUSTOMERS(
+  
+  

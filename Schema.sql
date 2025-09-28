@@ -1,23 +1,24 @@
 sql
 CREATE TABLE CUSTOMERS (
-  customer_id NUMBER PRIMARY KEY,
+  customer_id INT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   region VARCHAR(50) NOT NULL
 );
 CREATE TABLE PRODUCTS (
-  product_id NUMBER PRIMARY KEY,
+  product_id INT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   category VARCHAR(50) NOT NULL
 );
 CREATE TABLE TRANSACTIONS (
-  transaction_id NUMBER PRIMARY KEY,
-  customer_id NUMBER, 
-  product_id NUMBER,
+  transaction_id INT PRIMARY KEY,
+  customer_id INT, 
+  product_id INT,
   sale_date DATE NOT NULL,
-  amount NUMBER(10,2) NOT NULL,
+  amount INT (10,2) NOT NULL,
   CONSTRAINT fk_CUSTOMER FOREIGN KEY (customer_id) REFERENCES CUSTOMERS (customer_id),
   CONSTRAINT fk_PRODUCT FOREIGN KEY (product_id) REFERENCES PRODUCTS (product_id)
-);Inserting values in the created tables
+);
+## Inserting values in the created tables
      CUSTOMERS
 INSERT INTO CUSTOMERS VALUES (1001,'Keza Nisha', 'Kigali');
 INSERT INTO CUSTOMERS VALUES (1002,'Mucyo Brian', 'Kicukiro');

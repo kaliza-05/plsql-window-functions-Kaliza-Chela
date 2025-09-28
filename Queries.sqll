@@ -1,0 +1,57 @@
+sql
+## Ranking customers by their total revenue
+SELECT 
+    c.customer_id,
+    c.name,
+    SUM(t.amount) AS total_revenue,
+
+    ROW_NUMBER() OVER (ORDER BY SUM(t.amount) DESC) AS row_num,       
+    RANK() OVER (ORDER BY SUM(t.amount) DESC) AS revenue_rank,        
+    DENSE_RANK() OVER (ORDER BY SUM(t.amount) DESC) AS dense_rank,    
+    PERCENT_RANK() OVER (ORDER BY SUM(t.amount) DESC) AS pct_rank     
+FROM customers c
+JOIN transactions t ON c.customer_id = t.customer_id
+GROUP BY c.customer_id, c.name
+ORDER BY total_revenue DESC;
+
+## Running totals and monthly sales trends
+SELECT 
+    TO_CHAR(t.sale_date, 'YYYY-MM') AS month,
+    SUM(t.amount) AS monthly_sales,
+    SUM(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')) AS running_total,
+    AVG(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')) AS avg_sales,
+    MAX(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')) AS max_sales,
+    MIN(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')) AS min_sales
+FROM transactions t
+GROUP BY TO_CHAR(t.sale_date, 'YYYY-MM')
+ORDER BY month;
+
+## Month-over-month sales growth using LAG & LEAD
+SELECT 
+    TO_CHAR(t.sale_date, 'YYYY-MM') AS month,
+    SUM(t.amount) AS monthly_sales,
+
+    LAG(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')) AS prev_month,
+    LEAD(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')) AS next_month,
+
+    ROUND(
+        ((SUM(t.amount) - LAG(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')))
+        / NULLIF(LAG(SUM(t.amount)) OVER (ORDER BY TO_CHAR(t.sale_date, 'YYYY-MM')), 0)) * 100, 2
+    ) AS growth_pct
+FROM transactions t
+GROUP BY TO_CHAR(t.sale_date, 'YYYY-MM')
+ORDER BY month;
+
+## Segment customers into quartiles based on spending
+SELECT 
+    c.customer_id,
+    c.name,
+    SUM(t.amount) AS total_spent,
+
+    NTILE(4) OVER (ORDER BY SUM(t.amount) DESC) AS spending_quartile,    
+    CUME_DIST() OVER (ORDER BY SUM(t.amount) DESC) AS cumulative_dist    
+FROM customers c
+JOIN transactions t ON c.customer_id = t.customer_id
+GROUP BY c.customer_id, c.name
+ORDER BY total_spent DESC;
+  
